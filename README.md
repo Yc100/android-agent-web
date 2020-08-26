@@ -1,7 +1,6 @@
 # android-web
 
 android-web
-爱养牛安卓端 使用WebView编写的安卓壳子，套vue前端h5项目应用
 使用AgentWeb框架 编写的原生H5套壳项目框架
 基本功能
 ======
