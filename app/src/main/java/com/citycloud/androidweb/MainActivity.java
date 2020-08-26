@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
+import android.webkit.ValueCallback;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -15,10 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.citycloud.androidweb.common.AndroidInterface;
 import com.just.agentweb.AgentWeb;
 import com.just.agentweb.DefaultWebClient;
 import com.just.agentweb.WebChromeClient;
 import com.just.agentweb.WebViewClient;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -100,8 +105,41 @@ public class MainActivity extends AppCompatActivity {
         //mAgentWeb.getWebCreator().getWebView().getSettings().setAllowFileAccess(true);
 
 
+        /*实现android与js通信 */
+        if(mAgentWeb!=null){
+            //注入对象
+            mAgentWeb.getJsInterfaceHolder().addJavaObject("android",new AndroidInterface(mAgentWeb,this));
+        }
+
+        /*安卓调用js*/
+        //一个参数
+        mAgentWeb.getJsAccessEntrace().quickCallJs("callByAndroidParam","Hello ! Agentweb");
+
+        //多个参数
+        mAgentWeb.getJsAccessEntrace().quickCallJs("callByAndroidMoreParams", new ValueCallback<String>() {
+            @Override
+            public void onReceiveValue(String value) {
+                Log.i("Info","value:"+value);
+            }
+        },getJson(),"say:", " Hello! Agentweb");
+
+        /*js调用安卓*/
     }
 
+
+    private String getJson(){
+        String result="";
+        try {
+            JSONObject mJSONObject=new JSONObject();
+            mJSONObject.put("id",1);
+            mJSONObject.put("name","Agentweb");
+            mJSONObject.put("age",18);
+            result= mJSONObject.toString();
+        }catch (Exception e){
+
+        }
+        return result;
+    }
 
     // 看导包 这些是第三方的 不是自带的
     private WebChromeClient webChromeClient = new WebChromeClient() {
